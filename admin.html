@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Jastip to Jastiper</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* TEMA BIRU (SAMA DENGAN USER) */
+        :root { --primary-color: #0487D9; --primary-light: #e6f2fa; --bg-body: #f4f7f6; --card-radius: 16px; }
+        
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-body); padding-bottom: 30px; }
+        .navbar { background-color: white !important; box-shadow: 0 4px 20px rgba(0,0,0,0.03); z-index: 1050; }
+        .btn-home-nav { color: var(--primary-color); background: var(--primary-light); border-radius: 12px; width: 42px; height: 42px; border: none; }
+        
+        .home-menu-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 5px; }
+        .menu-card { background: white; border-radius: var(--card-radius); padding: 20px 15px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.03); cursor: pointer; height: 100%; border: 1px solid rgba(0,0,0,0.02); }
+        .menu-icon-box { width: 50px; height: 50px; background: var(--primary-light); color: var(--primary-color); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 12px; }
+        .menu-text h5 { font-weight: 600; margin: 0; font-size: 0.9rem; color: #2c3e50; }
+        .menu-text small { font-size: 0.7rem; color: #7f8c8d; }
+
+        .form-control { border-radius: 10px; padding: 12px; border: 1px solid #eee; margin-bottom: 5px; }
+        .btn-primary { background: var(--primary-color); border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: 600; }
+        
+        /* ITEM LIST BLOCK */
+        .item-block {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .btn-remove-item {
+            position: absolute; top: 10px; right: 10px;
+            color: #dc3545; background: #fff5f5; border:none;
+            width: 30px; height: 30px; border-radius: 50%;
+            display:flex; align-items:center; justify-content:center;
+        }
+
+        .history-list { max-height: 300px; overflow-y: auto; background: white; padding: 15px; border-radius: 16px; margin-top: 15px; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; align-items: center; }
+        
+        .card-preview { position: relative; width: 80px; height: 80px; border-radius: 10px; overflow: hidden; border: 1px solid #dee2e6; margin-top: 10px; display: none; }
+        .card-preview img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.85); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        .sticky-wrapper { position: sticky; top: 0; z-index: 1040; background: var(--bg-body); padding-bottom: 10px; }
+        .page-header { background: white; padding: 15px 20px; border-radius: 0 0 20px 20px; display: flex; align-items: center; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+    </style>
+</head>
+<body>
+
+    <div id="loading" class="loading-overlay">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="mt-3 fw-bold text-primary">Tunggu Ya...</div>
+    </div>
+
+    <nav class="navbar sticky-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span class="navbar-brand mb-0 h1 fw-bold text-primary">Dashboard Koordinasi</span>
+            <button class="btn-home-nav" onclick="goTo('home')"><i class="fas fa-home"></i></button>
+        </div>
+    </nav>
+
+    <div id="view-home" class="container mt-4">
+        <div class="mb-4 ps-1">
+            <h5 class="fw-bold mb-0 text-dark">Halo, Admin!</h5>
+            <small class="text-muted">Koordinasi dokumentasi dengan Jastiper disini.</small>
+        </div>
+
+        <div class="home-menu-container">
+            <div class="menu-card" onclick="goTo('input')">
+                <div class="menu-icon-box"><i class="fas fa-cart-plus"></i></div>
+                <div class="menu-text"><h5>Input List Belanja</h5><small>Tambah list & foto</small></div>
+            </div>
+            <div class="menu-card" onclick="goTo('note')">
+                <div class="menu-icon-box"><i class="fas fa-sticky-note"></i></div>
+                <div class="menu-text"><h5>Tulis Note</h5><small>Buat catatan baru</small></div>
+            </div>
+            <div class="menu-card" onclick="goTo('struk')">
+                <div class="menu-icon-box"><i class="fas fa-receipt"></i></div>
+                <div class="menu-text"><h5>Cek Backup Struk</h5><small>Lihat riwayat upload</small></div>
+            </div>
+            <div class="menu-card" onclick="goTo('suica')">
+                <div class="menu-icon-box"><i class="fas fa-subway"></i></div>
+                <div class="menu-text"><h5>Cek Riwayat Suica</h5><small>Lihat riwayat input</small></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-input" style="display:none;">
+        <div class="sticky-wrapper">
+            <div class="page-header">
+                <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                <h6 class="fw-bold mb-0">Input List Belanja</h6>
+            </div>
+        </div>
+        <div class="container">
+            <div class="card p-4 border-0 shadow-sm rounded-4 mb-3">
+                <label class="small text-muted fw-bold">Nama Customer</label>
+                <input type="text" id="inpNama" class="form-control" placeholder="Contoh: Budi" oninput="saveDraft()">
+            </div>
+
+            <div id="itemsContainer"></div>
+
+            <button class="btn btn-outline-primary w-100 mb-3 dashed-border" onclick="addItemBlock()">
+                <i class="fas fa-plus"></i> Tambah Barang
+            </button>
+
+            <button class="btn btn-primary w-100 py-3 shadow-sm rounded-pill" onclick="submitBelanjaMulti()">
+                <i class="fas fa-save me-2"></i> INPUT SEMUA LIST
+            </button>
+        </div>
+    </div>
+
+    <div id="view-note" style="display:none;">
+        <div class="sticky-wrapper">
+            <div class="page-header">
+                <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                <h6 class="fw-bold mb-0">Tulis Catatan</h6>
+            </div>
+        </div>
+        <div class="container">
+            <div class="card p-4 border-0 shadow-sm rounded-4">
+                <textarea id="inpNote" class="form-control" rows="5" placeholder="Tulis pengumuman atau catatan disini..." oninput="saveDraftNote()"></textarea>
+                <button class="btn btn-primary mt-2" onclick="submitNote()">Kirim Catatan</button>
+            </div>
+            <h6 class="mt-4 fw-bold text-muted ps-2">Catatan Saat Ini</h6>
+            <div id="noteHistory" class="history-list">Memuat...</div>
+        </div>
+    </div>
+
+    <div id="view-struk" style="display:none;">
+        <div class="sticky-wrapper">
+            <div class="page-header">
+                <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                <h6 class="fw-bold mb-0">Riwayat Struk</h6>
+            </div>
+        </div>
+        <div class="container">
+            <button class="btn btn-sm btn-outline-primary w-100 mb-2" onclick="loadStrukHistory()"><i class="fas fa-sync"></i> Refresh</button>
+            <div id="strukHistory" class="history-list">Memuat...</div>
+        </div>
+    </div>
+
+    <div id="view-suica" style="display:none;">
+        <div class="sticky-wrapper">
+            <div class="page-header">
+                <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                <h6 class="fw-bold mb-0">Riwayat Suica</h6>
+            </div>
+        </div>
+        <div class="container">
+            <button class="btn btn-sm btn-outline-primary w-100 mb-2" onclick="loadSuicaHistory()"><i class="fas fa-sync"></i> Refresh</button>
+            <div id="suicaHistory" class="history-list">Memuat...</div>
+        </div>
+    </div>
+
+    <script>
+        // GANTI URL INI DENGAN URL DEPLOYMENT BARU (HASIL UPDATE BACKEND)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzJqAV3UbuRfcCsz4YIVoWDsVY4lEpiup1mPZjT0WbbjdAgUtt_LLUtn0BvEK2528LHgQ/exec";
+
+        let blockCounter = 0;
+        let itemImages = {}; // Menyimpan data gambar per block ID
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Load Draft Input Belanja
+            const savedName = localStorage.getItem('draft_admin_nama');
+            if (savedName) document.getElementById('inpNama').value = savedName;
+
+            const savedItems = JSON.parse(localStorage.getItem('draft_admin_items') || '[]');
+            if (savedItems.length > 0) {
+                savedItems.forEach(item => addItemBlock(item.item, item.loc));
+            } else {
+                addItemBlock(); // Default 1 block kosong
+            }
+
+            // Load Draft Note
+            const savedNote = localStorage.getItem('draft_admin_note');
+            if (savedNote) document.getElementById('inpNote').value = savedNote;
+        });
+
+        // --- NAVIGATION ---
+        function goTo(view) {
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.style.display='none');
+            document.getElementById('view-'+view).style.display = 'block';
+            
+            if(view === 'note') loadNotes();
+            if(view === 'struk') loadStrukHistory();
+            if(view === 'suica') loadSuicaHistory();
+        }
+
+        // --- FITUR MULTI ITEM + AUTO SAVE ---
+        
+        function addItemBlock(defaultItem = '', defaultLoc = '') {
+            blockCounter++;
+            const id = blockCounter;
+            
+            const html = `
+            <div class="item-block" id="block-${id}">
+                <button class="btn-remove-item" onclick="removeBlock(${id})"><i class="fas fa-times"></i></button>
+                
+                <label class="small text-muted fw-bold">NAMA BARANG</label>
+                <input type="text" class="form-control inp-item-name" placeholder="Contoh: KitKat" value="${defaultItem}" oninput="saveDraft()">
+                
+                <label class="small text-muted fw-bold mt-2">LOKASI BELANJA</label>
+                <input type="text" class="form-control inp-item-loc" placeholder="Contoh: Donki" value="${defaultLoc}" oninput="saveDraft()">
+                
+                <label class="small text-muted fw-bold mt-2">FOTO REFERENSI</label>
+                <input type="file" accept="image/*" class="form-control" onchange="handleImage(this, ${id})">
+                <div id="preview-${id}" class="card-preview"></div>
+            </div>`;
+            
+            document.getElementById('itemsContainer').insertAdjacentHTML('beforeend', html);
+            saveDraft();
+        }
+
+        function removeBlock(id) {
+            const el = document.getElementById(`block-${id}`);
+            if(el) el.remove();
+            delete itemImages[id];
+            saveDraft();
+        }
+
+        function handleImage(input, id) {
+            if(input.files.length) {
+                resizeImage(input.files[0], 800).then(b => {
+                    itemImages[id] = b;
+                    const p = document.getElementById(`preview-${id}`);
+                    p.style.display = 'block';
+                    p.innerHTML = `<img src="${b}">`;
+                });
+            }
+        }
+
+        // Fungsi Auto Save ke LocalStorage (Anti Refresh)
+        function saveDraft() {
+            const nama = document.getElementById('inpNama').value;
+            localStorage.setItem('draft_admin_nama', nama);
+
+            const items = [];
+            document.querySelectorAll('.item-block').forEach(block => {
+                items.push({
+                    item: block.querySelector('.inp-item-name').value,
+                    loc: block.querySelector('.inp-item-loc').value
+                });
+            });
+            localStorage.setItem('draft_admin_items', JSON.stringify(items));
+        }
+
+        function saveDraftNote() {
+            const note = document.getElementById('inpNote').value;
+            localStorage.setItem('draft_admin_note', note);
+        }
+
+        function clearDraftBelanja() {
+            localStorage.removeItem('draft_admin_nama');
+            localStorage.removeItem('draft_admin_items');
+            document.getElementById('inpNama').value = '';
+            document.getElementById('itemsContainer').innerHTML = '';
+            itemImages = {};
+            blockCounter = 0;
+            addItemBlock(); // Reset ke 1 block kosong
+        }
+
+        function submitBelanjaMulti() {
+            const nama = document.getElementById('inpNama').value;
+            if(!nama) return Swal.fire('Error', 'Nama Kustomer wajib diisi', 'warning');
+
+            const payloadItems = [];
+            let isValid = true;
+
+            document.querySelectorAll('.item-block').forEach(block => {
+                const id = block.id.replace('block-', '');
+                const itemName = block.querySelector('.inp-item-name').value;
+                const itemLoc = block.querySelector('.inp-item-loc').value;
+                const img = itemImages[id] || null;
+
+                if(itemName) {
+                    payloadItems.push({ item: itemName, lokasi: itemLoc, image: img });
+                }
+            });
+
+            if(payloadItems.length === 0) return Swal.fire('Error', 'Minimal isi 1 barang', 'warning');
+
+            fetchGAS('add_belanja_multi', { nama: nama, items: payloadItems }).then(res => {
+                Swal.fire('Sukses', res.message, 'success');
+                clearDraftBelanja(); // Hapus draft jika sukses
+            });
+        }
+
+        // --- FITUR LAIN ---
+        
+        function submitNote() {
+            const note = document.getElementById('inpNote').value;
+            if(!note) return;
+            fetchGAS('add_note', {note}).then(() => {
+                Swal.fire('Sukses', 'Catatan terkirim', 'success');
+                document.getElementById('inpNote').value = '';
+                localStorage.removeItem('draft_admin_note'); // Clear draft
+                loadNotes();
+            });
+        }
+
+        function loadNotes() {
+            fetchGAS('get_notes').then(data => {
+                const c = document.getElementById('noteHistory'); c.innerHTML = '';
+                if(!data.length) { c.innerHTML = '<small class="text-muted">Kosong</small>'; return; }
+                data.forEach(r => c.innerHTML += `<div class="history-item"><span>${r[0]}</span></div>`);
+            });
+        }
+
+        function loadStrukHistory() {
+            fetchGAS('get_struk_history').then(data => {
+                const c = document.getElementById('strukHistory'); c.innerHTML = '';
+                if(!data.length) { c.innerHTML = '<small class="text-muted">Kosong</small>'; return; }
+                data.forEach(r => {
+                    let d = new Date(r[0]); let ds = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+                    c.innerHTML += `<div class="history-item"><div><div class="item-label">${ds}</div></div><a href="${r[1]}" target="_blank" class="btn btn-sm btn-light border">Buka</a></div>`;
+                });
+            });
+        }
+
+        function loadSuicaHistory() {
+            fetchGAS('get_suica_history').then(data => {
+                const c = document.getElementById('suicaHistory'); c.innerHTML = '';
+                if(!data.length) { c.innerHTML = '<small class="text-muted">Kosong</small>'; return; }
+                data.forEach(r => {
+                    let d = new Date(r[0]); let ds = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+                    c.innerHTML += `<div class="history-item"><div><div class="item-label">${ds}</div></div><div class="fw-bold">¥${parseInt(r[1]).toLocaleString()}</div></div>`;
+                });
+            });
+        }
+
+        // --- HELPERS ---
+        function fetchGAS(action, payload={}) {
+            document.getElementById('loading').style.display='flex';
+            return fetch(GAS_URL, { method: 'POST', body: JSON.stringify({action, ...payload}) })
+            .then(res => res.json()).finally(() => document.getElementById('loading').style.display='none');
+        }
+        
+        function resizeImage(file, max) {
+            return new Promise(r => { 
+                const rd = new FileReader(); rd.readAsDataURL(file); 
+                rd.onload=e=>{ 
+                    const i=new Image(); i.src=e.target.result; 
+                    i.onload=()=>{ 
+                        const c=document.createElement('canvas'); const s=max/i.width; 
+                        c.width=max; c.height=i.height*s; 
+                        c.getContext('2d').drawImage(i,0,0,c.width,c.height); 
+                        r(c.toDataURL('image/jpeg',0.7)); 
+                    } 
+                } 
+            });
+        }
+    </script>
+</body>
+</html>
