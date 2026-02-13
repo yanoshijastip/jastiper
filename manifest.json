@@ -1,0 +1,17 @@
+{
+  "name": "Jastiper Yanoshi",
+  "short_name": "Jastip",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#0487D9",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logoappjastiper.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
