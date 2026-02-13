@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jastiper Yanoshi</title>
+
+    <link rel="manifest" href="manifest.json">
+    
+    <meta name="theme-color" content="#0487D9">
+
+    <link rel="apple-touch-icon" href="logo.png"> <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Yanoshi">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary-color: #0487D9;
+            --primary-dark: #036aa8;
+            --primary-light: #e6f2fa;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --bg-body: #f4f7f6;
+            --card-radius: 16px;
+            --header-height: 65px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            padding-bottom: 30px;
+            overscroll-behavior-y: none;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #view-splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out;
+        }
+        .splash-logo { width: 100px; margin-bottom: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- LOGIN SCREEN --- */
+        #view-login {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 5000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .login-card {
+            background: white; width: 100%; max-width: 400px;
+            padding: 40px 30px; border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;
+        }
+        .login-logo { width: 80px; margin-bottom: 20px; }
+        .form-floating > .form-control { border-radius: 12px; border: 1px solid #eee; }
+        .form-floating > .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px var(--primary-light); }
+        
+        /* Toggle Password (Mata) */
+        .password-toggle {
+            position: absolute; top: 50%; right: 15px; transform: translateY(-50%);
+            cursor: pointer; color: var(--text-muted); z-index: 10; padding: 5px;
+        }
+        
+        .btn-login {
+            width: 100%; padding: 14px; border-radius: 12px;
+            background: var(--primary-color); border: none;
+            color: white; font-weight: 600; letter-spacing: 0.5px;
+            margin-top: 10px; box-shadow: 0 4px 15px rgba(4, 135, 217, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-login:active { transform: scale(0.98); }
+
+        /* --- APP WRAPPER --- */
+        #app-wrapper { display: none; }
+
+        /* --- NAVBAR & UTILS --- */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            height: var(--header-height);
+            z-index: 1050;
+        }
+        .btn-home-nav {
+            color: var(--primary-color); background: var(--primary-light);
+            border-radius: 12px; width: 42px; height: 42px;
+            display: flex; align-items: center; justify-content: center;
+            border: none; transition: all 0.2s;
+        }
+        .btn-logout {
+            color: #dc3545; background: #fff5f5;
+            border-radius: 12px; width: 42px; height: 42px;
+            display: flex; align-items: center; justify-content: center;
+            border: none; transition: all 0.2s; margin-left: 10px;
+        }
+
+        /* --- GRID MENU --- */
+        .home-menu-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 5px; }
+        .menu-card {
+            background: white; border-radius: var(--card-radius); padding: 20px 15px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+            transition: transform 0.2s; cursor: pointer; height: 100%;
+        }
+        .menu-card:active { transform: scale(0.97); }
+        .menu-icon-box {
+            width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%);
+            color: var(--primary-color); border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(4, 135, 217, 0.1);
+        }
+        .menu-text h5 { font-weight: 600; margin: 0 0 4px 0; color: var(--text-dark); font-size: 0.9rem; line-height: 1.3; }
+        .menu-text small { color: var(--text-muted); font-size: 0.7rem; line-height: 1.2; display: block; }
+
+        /* --- NOTE SECTION --- */
+        .note-section-title { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin: 25px 0 10px 5px; display: flex; align-items: center; justify-content: space-between; }
+        .note-container { background: white; border-radius: var(--card-radius); box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); padding: 0; overflow: hidden; }
+        .note-scroll-area { max-height: 200px; overflow-y: auto; padding: 15px; background: #fff; }
+        .note-item { display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed #eee; animation: fadeIn 0.5s ease; }
+        .note-item:last-child { border-bottom: none; }
+        .note-icon { color: var(--primary-color); background: var(--primary-light); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-right: 12px; flex-shrink: 0; margin-top: 2px; }
+        .note-text { font-size: 0.85rem; color: var(--text-dark); line-height: 1.5; white-space: pre-wrap; }
+
+        /* --- SHOPPING CARD --- */
+        .shopping-card { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s; }
+        .card-sudah { background: #d1e7dd !important; color: #0f5132; }
+        .card-belum { background: #f8d7da !important; color: #842029; }
+        .card-tidak { background: #e2e3e5 !important; color: #41464b; opacity: 0.75; }
+        .card-sudah .item-name, .card-sudah .shopper-info, .card-sudah i { color: #0f5132 !important; }
+        .card-belum .item-name, .card-belum .shopper-info, .card-belum i { color: #842029 !important; }
+        .card-tidak .item-name, .card-tidak .shopper-info, .card-tidak i { color: #41464b !important; }
+        
+        .shopping-content-wrapper { display: flex; gap: 15px; padding: 15px; align-items: center; }
+        .shopping-img-box { width: 65px; height: 65px; border-radius: 12px; background-color: rgba(255,255,255,0.5); overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .shopping-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .shopping-body { padding: 0 !important; flex-grow: 1; }
+        .item-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
+        .shopper-info { font-size: 0.85rem; display: flex; gap: 10px; opacity: 0.9; }
+        .shopping-actions { display: flex; background-color: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border-top: 1px solid rgba(0,0,0,0.05); }
+        .btn-action { flex: 1; border: none; background: transparent; padding: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+        .card-sudah .btn-action { color: #0f5132; } .card-belum .btn-action { color: #842029; } .card-tidak .btn-action { color: #41464b; }
+
+        /* --- PREVIEW --- */
+        #previewArea { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px; }
+        .card-preview { position: relative; width: 100px; height: 100px; border-radius: 12px; overflow: hidden; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-remove { position: absolute; top: 4px; right: 4px; background: rgba(220, 53, 69, 0.9); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+
+        /* --- HISTORY SCROLL --- */
+        .history-container-box { background: white; border-radius: var(--card-radius); box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); overflow: hidden; margin-top: 15px; }
+        .history-header { padding: 15px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+        .history-scroll-area { max-height: 250px; overflow-y: auto; padding: 10px; }
+        .struk-history-item, .history-item { background: white; border-radius: 10px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border: 1px solid #f0f0f0; }
+        .btn-link-drive { background-color: var(--primary-light); color: var(--primary-color); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; text-decoration: none; font-weight: 500; }
+
+        /* --- OTHER --- */
+        .sticky-wrapper { position: sticky; top: 0; z-index: 1040; background: var(--bg-body); padding-bottom: 10px; }
+        .page-header { background: white; padding: 15px 20px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; margin-bottom: 15px; }
+        .loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.85); backdrop-filter: blur(2px); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-control, .form-select { border-radius: 10px; border: 1px solid #e0e0e0; padding: 10px 15px; }
+        .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(4, 135, 217, 0.1); }
+    </style>
+</head>
+<body>
+
+    <div id="view-splash">
+        <img src="https://yanoshijapan.github.io/asetonline/jastiplogo.png" class="splash-logo">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <div id="view-login">
+        <div class="login-card fade-in">
+            <img src="https://yanoshijapan.github.io/asetonline/jastiplogo.png" class="login-logo">
+            <h5 class="fw-bold mb-1">Welcome Traveler!</h5>
+            <p class="text-muted small mb-4">Silakan login dulu ya</p>
+            
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="loginUsername" placeholder="Username">
+                <label for="loginUsername">Username</label>
+            </div>
+            
+            <div class="form-floating mb-4 position-relative">
+                <input type="password" class="form-control" id="loginPassword" placeholder="Password" style="padding-right: 40px;">
+                <label for="loginPassword">Password</label>
+                <span class="password-toggle" onclick="togglePassword()">
+                    <i class="fas fa-eye" id="toggleIcon"></i>
+                </span>
+            </div>
+            
+            <button class="btn btn-login" onclick="prosesLogin()">
+                <i class="fas fa-sign-in-alt me-2"></i> MASUK
+            </button>
+        </div>
+    </div>
+
+    <div id="app-wrapper">
+        <div id="loading" class="loading-overlay">
+            <div class="spinner-border text-primary" role="status"></div>
+            <div class="mt-3 fw-bold" style="color: var(--primary-color)">Tunggu Ya...</div>
+        </div>
+
+        <nav class="navbar sticky-top">
+            <div class="container d-flex justify-content-between align-items-center">
+                <span class="navbar-brand mb-0 h1 d-flex align-items-center">
+                    <img src="https://yanoshijapan.github.io/asetonline/jastiplogo.png" alt="Yanoshi" height="38">
+                </span>
+                <div class="d-flex">
+                    <button class="btn-home-nav" onclick="goTo('home')"><i class="fas fa-home"></i></button>
+                    <button class="btn-logout" onclick="prosesLogout()"><i class="fas fa-power-off"></i></button>
+                </div>
+            </div>
+        </nav>
+
+        <div id="view-home" class="container mt-3 fade-in">
+            <div class="mb-4 ps-1">
+                <h5 class="fw-bold mb-0 text-dark">Halo, <span id="displayUser">Admin</span>!</h5>
+                <small class="text-muted">Mau urus apa hari ini?</small>
+            </div>
+
+            <div class="home-menu-container">
+                <div class="menu-card" onclick="goTo('struk')">
+                    <div class="menu-icon-box"><i class="fas fa-receipt"></i></div>
+                    <div class="menu-text"><h5>Backup Struk</h5><small>Upload foto struk</small></div>
+                </div>
+                <div class="menu-card" onclick="goTo('list')">
+                    <div class="menu-icon-box"><i class="fas fa-users"></i></div>
+                    <div class="menu-text"><h5>List Jastip</h5><small>Cek & upload bukti</small></div>
+                </div>
+                <div class="menu-card" onclick="goTo('belanja')">
+                    <div class="menu-icon-box"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="menu-text"><h5>List Belanja</h5><small>Checklist barang</small></div>
+                </div>
+                <div class="menu-card" onclick="goTo('suica')">
+                    <div class="menu-icon-box"><i class="fas fa-subway"></i></div>
+                    <div class="menu-text"><h5>Catat Suica</h5><small>Input pengeluaran</small></div>
+                </div>
+            </div>
+
+            <div class="note-section-title">
+                <span><i class="fas fa-sticky-note me-2 text-primary"></i>Catatan dari Admin</span>
+                <button class="btn btn-sm text-primary p-0" onclick="loadNotes()"><i class="fas fa-sync-alt"></i></button>
+            </div>
+            <div class="note-container fade-in">
+                <div id="noteList" class="note-scroll-area">
+                    <div class="text-center text-muted small py-3">Memuat catatan...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-list" class="fade-in" style="display: none;">
+            <div class="sticky-wrapper">
+                <div class="page-header">
+                    <button class="btn btn-light btn-sm me-3 border" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                    <h6 class="fw-bold mb-0">List Nama Jastip</h6>
+                </div>
+                <div class="bg-white px-3 border-bottom shadow-sm" style="border-radius: 16px; margin: 0 15px;">
+                    <select id="sheetSelector" class="form-select mb-2 mt-2 border-0 bg-light" onchange="loadDataSheet()">
+                        <option value="" disabled selected>Pilih Sheet...</option>
+                    </select>
+                    <div class="row g-2 pb-3">
+                        <div class="col-8"><input type="text" id="searchInput" class="form-control" placeholder="Cari nama..." onkeyup="filterLocalData()"></div>
+                        <div class="col-4">
+                            <select id="statusFilter" class="form-select" onchange="filterLocalData()">
+                                <option value="all">Semua</option>
+                                <option value="pending">Belum</option>
+                                <option value="done">Selesai</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container mt-3 pb-5" id="listContainer"></div>
+        </div>
+
+        <div id="view-belanja" class="fade-in" style="display: none;">
+            <div class="sticky-wrapper">
+                <div class="page-header">
+                    <button class="btn btn-light btn-sm me-3 border" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                    <h6 class="fw-bold mb-0">Daftar Belanja</h6>
+                </div>
+                <div class="bg-white px-3 border-bottom shadow-sm" style="border-radius: 16px; margin: 0 15px;">
+                    <div class="row g-2 pt-3 pb-3">
+                        <div class="col-12">
+                            <input type="text" id="searchBelanja" class="form-control" placeholder="Cari barang / lokasi..." onkeyup="filterBelanja()">
+                        </div>
+                        <div class="col-12">
+                             <select id="filterStatusBelanja" class="form-select" onchange="filterBelanja()">
+                                <option value="all">Semua Status</option>
+                                <option value="sudah">Sudah Dibelanjakan</option>
+                                <option value="belum">Belum Dibelanjakan</option>
+                                <option value="tidak">Barang Tidak Ada</option>
+                            </select>
+                        </div>
+                        <div class="col-12 text-end"><small id="belanjaCount" class="text-muted" style="font-size: 0.75rem;">0 Item</small></div>
+                    </div>
+                </div>
+            </div>
+            <div class="container mt-3 pb-5">
+                <button class="btn btn-primary w-100 mb-3 shadow-sm rounded-pill py-2" onclick="loadBelanja()"><i class="fas fa-sync-alt me-1"></i> Refresh Data</button>
+                <div id="belanjaContainer"></div>
+            </div>
+        </div>
+
+        <div id="view-suica" class="fade-in container mt-4" style="display: none;">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-light btn-sm me-3 border" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                <h5 class="fw-bold mb-0">Input Suica</h5>
+            </div>
+            <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 16px;">
+                <label class="form-label fw-bold text-muted small">NOMINAL (YEN)</label>
+                <input type="number" id="inputSuicaNominal" class="form-control form-control-lg mb-4 fw-bold text-primary" placeholder="0">
+                <button onclick="kirimSuica()" class="btn btn-primary btn-lg w-100 rounded-pill">Input Data</button>
+            </div>
+            <div class="history-container-box">
+                <div class="history-header">
+                    <h6 class="fw-bold text-muted mb-0">Riwayat Input</h6>
+                    <small class="text-primary cursor-pointer" onclick="loadSuicaHistory()"><i class="fas fa-sync-alt"></i> Refresh</small>
+                </div>
+                <div id="suicaHistory" class="history-scroll-area">
+                    <p class="text-center text-muted small py-3">Memuat data...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-struk" class="container mt-4 fade-in" style="display: none;">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-light btn-sm me-3 border" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                <h5 class="fw-bold mb-0">Upload Struk</h5>
+            </div>
+            
+            <div class="card shadow-sm p-4 mb-4 border-0" style="border-radius: 16px;">
+                <div class="text-center mb-3">
+                    <i class="fas fa-cloud-upload-alt text-primary fa-3x mb-2 opacity-50"></i>
+                    <p class="text-muted small">Pilih foto dari galeri HP atau foto langsung</p>
+                </div>
+                <input type="file" id="inputStruk" multiple accept="image/*" class="form-control mb-3">
+                <div id="previewArea" class="mb-3"></div>
+                <button onclick="kirimStruk()" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">Kirim Struk</button>
+            </div>
+
+            <div class="history-container-box">
+                <div class="history-header">
+                    <h6 class="fw-bold text-muted mb-0">Riwayat Upload</h6>
+                    <button class="btn btn-sm btn-light text-primary border-0 p-0" onclick="loadStrukHistory()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+                <div id="strukHistoryContainer" class="history-scroll-area">
+                    <div class="text-center py-4 text-muted small">Belum memuat data...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxwk0Pk4f1OjyLKDCySUdJO8Oy06NN-tO1z1UjIjyiMDE5bQVSs2twlvf-GxwOk-E0Rxg/exec"; 
+
+        // State Global
+        let globalDataList = [];
+        let flattenedBelanjaList = []; 
+        let filesToUpload = [];
+        let currentNamaData = null;
+
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
+        
+        // --- AUTH CHECK ---
+        document.addEventListener("DOMContentLoaded", () => {
+            checkSession();
+        });
+
+        function checkSession() {
+            const session = localStorage.getItem('yanoshi_session');
+            const splash = document.getElementById('view-splash');
+            
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    if (session) {
+                        const user = localStorage.getItem('yanoshi_username') || 'Admin';
+                        document.getElementById('displayUser').innerText = user;
+                        document.getElementById('app-wrapper').style.display = 'block';
+                        loadLocalBelanja();
+                        loadNotes();
+                    } else {
+                        document.getElementById('view-login').style.display = 'flex';
+                    }
+                }, 500);
+            }, 1500);
+        }
+
+        // --- TOGGLE PASSWORD FUNCTION ---
+        function togglePassword() {
+            const passwordInput = document.getElementById('loginPassword');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        function prosesLogin() {
+            const u = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+            
+            if(!u || !p) return Swal.fire('Error', 'Isi username & password', 'error');
+            
+            const btn = document.querySelector('.btn-login');
+            const oriText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Loading...';
+            btn.disabled = true;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', username: u, password: p })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    localStorage.setItem('yanoshi_session', 'active');
+                    localStorage.setItem('yanoshi_username', data.username);
+                    
+                    document.getElementById('view-login').style.display = 'none';
+                    document.getElementById('displayUser').innerText = data.username;
+                    document.getElementById('app-wrapper').style.display = 'block';
+                    
+                    loadLocalBelanja();
+                    loadNotes();
+                } else {
+                    Swal.fire('Login Gagal', data.message, 'error');
+                }
+            })
+            .catch(err => Swal.fire('Error', 'Gagal koneksi server', 'error'))
+            .finally(() => {
+                btn.innerHTML = oriText;
+                btn.disabled = false;
+            });
+        }
+
+        function prosesLogout() {
+            Swal.fire({
+                title: 'Logout?',
+                text: "Kamu harus login ulang nanti.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Ya, Logout'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('yanoshi_session');
+                    localStorage.removeItem('yanoshi_username');
+                    window.location.reload();
+                }
+            });
+        }
+
+        // --- NAVIGATION ---
+        function goTo(view) {
+            document.querySelectorAll('[id^="view-"]').forEach(el => {
+                if(el.id !== 'view-splash' && el.id !== 'view-login') el.style.display = 'none';
+            });
+            document.getElementById('view-' + view).style.display = 'block';
+            window.scrollTo(0,0);
+
+            if(view === 'list' && document.getElementById('sheetSelector').options.length <= 1) loadSheetNames();
+            if(view === 'belanja') { loadLocalBelanja(); loadBelanja(); }
+            if(view === 'suica') loadSuicaHistory();
+            if(view === 'struk') loadStrukHistory();
+        }
+
+        function fetchGAS(action, payload = {}) {
+            setLoading(true);
+            return fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action, ...payload })
+            })
+            .then(res => res.json())
+            .finally(() => setLoading(false));
+        }
+
+        function setLoading(active) { 
+            const loadingEl = document.getElementById('loading');
+            if(active) loadingEl.style.display = 'flex'; else loadingEl.style.display = 'none';
+        }
+
+        // --- UTILS ---
+        function parseSmartItems(text) {
+            if (!text) return [];
+            let rawItems = text.split(/[\n,]+/);
+            return rawItems.map(item => item.replace(/^[\d\.\-\*\•\s\)]+/, '').trim()).filter(item => item !== "");
+        }
+        function saveToLocal(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+        function getFromLocal(key) { const data = localStorage.getItem(key); return data ? JSON.parse(data) : null; }
+
+        // --- APP LOGIC ---
+        function loadNotes() {
+            const container = document.getElementById('noteList');
+            container.innerHTML = '<div class="text-center text-muted small py-3"><div class="spinner-border spinner-border-sm text-primary mb-2"></div><br>Memuat catatan...</div>';
+            fetchGAS('get_notes').then(data => {
+                container.innerHTML = '';
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-muted small">Tidak ada catatan baru.</div>'; return;
+                }
+                data.forEach(row => {
+                    let html = `<div class="note-item"><div class="note-icon"><i class="fas fa-check"></i></div><div class="note-text">${row[0]}</div></div>`;
+                    container.innerHTML += html;
+                });
+            }).catch(err => { container.innerHTML = '<div class="text-center text-danger small py-3">Gagal memuat catatan.</div>'; });
+        }
+
+        function loadStrukHistory() {
+            fetchGAS('get_struk_history').then(data => {
+                const container = document.getElementById('strukHistoryContainer'); container.innerHTML = '';
+                if (!data || data.length === 0) { container.innerHTML = '<div class="text-center py-3 text-muted small">Belum ada riwayat.</div>'; return; }
+                data.forEach(item => {
+                    let dateStr = item[0];
+                    try { let d = new Date(item[0]); dateStr = d.toLocaleDateString('id-ID', { day:'numeric', month:'short'}) + ', ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}); } catch(e){}
+                    container.innerHTML += `<div class="struk-history-item"><div><div class="struk-date"><i class="far fa-calendar-alt me-1 text-primary"></i> ${dateStr}</div></div><a href="${item[1]}" target="_blank" class="btn-link-drive"><i class="fab fa-google-drive me-1"></i> Folder</a></div>`;
+                });
+            });
+        }
+        document.getElementById('inputStruk').addEventListener('change', e => { Array.from(e.target.files).forEach(f => resizeImage(f,800).then(b => {filesToUpload.push(b); renderPreview()})); });
+        function renderPreview() { const c = document.getElementById('previewArea'); c.innerHTML=''; filesToUpload.forEach((b,i) => c.innerHTML+=`<div class="card-preview"><img src="${b}"><div class="btn-remove" onclick="filesToUpload.splice(${i},1);renderPreview()"><i class="fas fa-times"></i></div></div>`); }
+        function kirimStruk() { if(!filesToUpload.length) return Swal.fire('Oops', 'Pilih foto dulu', 'warning'); fetchGAS('upload_struk', {images:filesToUpload}).then(()=>{ Swal.fire('Sukses','Struk terkirim','success'); filesToUpload=[]; renderPreview(); document.getElementById('inputStruk').value=''; loadStrukHistory(); }); }
+
+        function loadLocalBelanja() { const cached = getFromLocal('yanoshi_belanja'); if (cached) { flattenedBelanjaList = cached; filterBelanja(); } }
+        function loadBelanja() { if(flattenedBelanjaList.length === 0) setLoading(true); fetchGAS('get_belanja').then(data => { processBelanjaData(data); }); }
+        function processBelanjaData(rawData) {
+            let processedList = [];
+            rawData.forEach(row => {
+                let items = parseSmartItems(row.items); let statuses = row.statusRaw.split(',').map(s => s.trim()); let images = row.imagesRaw ? row.imagesRaw.split(',') : [];
+                items.forEach((item, index) => {
+                    let currentStat = statuses[index] ? statuses[index] : 'Belum'; let currentImg = images[index] ? images[index].trim() : '';
+                    processedList.push({ uniqueId: `${row.rowIndex}-${index}`, rowIndex: row.rowIndex, itemIndex: index, totalItems: items.length, nama: row.nama, item: item, lokasi: row.lokasi, status: currentStat, image: currentImg });
+                });
+            });
+            flattenedBelanjaList = processedList; saveToLocal('yanoshi_belanja', processedList); filterBelanja();
+        }
+        function filterBelanja() {
+            const keyword = document.getElementById('searchBelanja').value.toLowerCase(); const filterStat = document.getElementById('filterStatusBelanja').value; const container = document.getElementById('belanjaContainer'); container.innerHTML = '';
+            let count = 0;
+            flattenedBelanjaList.forEach(obj => {
+                let cardClass = 'card-belum'; if(obj.status.toLowerCase().includes('sudah')) cardClass = 'card-sudah'; if(obj.status.toLowerCase().includes('tidak')) cardClass = 'card-tidak';
+                let textMatch = obj.nama.toLowerCase().includes(keyword) || obj.item.toLowerCase().includes(keyword) || obj.lokasi.toLowerCase().includes(keyword);
+                let statusMatch = true;
+                if(filterStat === 'sudah' && !cardClass.includes('sudah')) statusMatch = false; if(filterStat === 'belum' && !cardClass.includes('belum')) statusMatch = false; if(filterStat === 'tidak' && !cardClass.includes('tidak')) statusMatch = false;
+                if(textMatch && statusMatch) {
+                    count++;
+                    let imgHtml = obj.image ? `<img src="${obj.image}" onclick="Swal.fire({imageUrl: '${obj.image}', showConfirmButton: false})">` : `<i class="fas fa-box-open text-muted" style="font-size:1.5rem"></i>`;
+                    container.innerHTML += `<div class="shopping-card ${cardClass}" id="card-${obj.uniqueId}"><div class="shopping-content-wrapper"><div class="shopping-img-box">${imgHtml}</div><div class="shopping-body"><div class="item-name">${obj.item}</div><div class="shopper-info"><span><i class="fas fa-user"></i> ${obj.nama}</span><span><i class="fas fa-map-marker-alt"></i> ${obj.lokasi}</span></div></div></div><div class="shopping-actions"><button class="btn-action act-done" onclick="updateStatusBelanja('${obj.uniqueId}', 'Sudah')"><i class="fas fa-check"></i></button><button class="btn-action act-pending" onclick="updateStatusBelanja('${obj.uniqueId}', 'Belum')"><i class="fas fa-times"></i></button><button class="btn-action act-void" onclick="updateStatusBelanja('${obj.uniqueId}', 'Tidak Ada')"><i class="fas fa-ban"></i></button></div></div>`;
+                }
+            });
+            document.getElementById('belanjaCount').innerText = count + ' Item';
+        }
+        function updateStatusBelanja(uniqueId, newStatus) {
+            let obj = flattenedBelanjaList.find(o => o.uniqueId === uniqueId); if(!obj) return;
+            obj.status = newStatus; saveToLocal('yanoshi_belanja', flattenedBelanjaList);
+            let cardEl = document.getElementById(`card-${uniqueId}`);
+            if(cardEl) { cardEl.className = `shopping-card`; if(newStatus === 'Sudah') cardEl.classList.add('card-sudah'); else if(newStatus === 'Tidak Ada') cardEl.classList.add('card-tidak'); else cardEl.classList.add('card-belum'); }
+            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_status_belanja', rowIndex: obj.rowIndex, itemIndex: obj.itemIndex, totalItems: obj.totalItems, newStatus: newStatus, nama: obj.nama, item: obj.item, lokasi: obj.lokasi }) }).catch(err => console.log("Bg sync err"));
+        }
+
+        function loadSheetNames() { 
+            fetchGAS('get_sheets').then(data => { 
+                const s = document.getElementById('sheetSelector'); s.innerHTML = '<option value="" disabled selected>Pilih Sheet...</option>'; 
+                data.sheets.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`); 
+                const lastSheet = localStorage.getItem('yanoshi_last_sheet');
+                if (lastSheet && data.sheets.includes(lastSheet)) { s.value = lastSheet; loadDataSheet(); }
+            }); 
+        }
+        function loadDataSheet() { 
+            const s = document.getElementById('sheetSelector').value; 
+            if (s) localStorage.setItem('yanoshi_last_sheet', s);
+            fetchGAS('get_data', { sheetName: s }).then(data => { globalDataList = data; filterLocalData(); }); 
+        }
+        function filterLocalData() {
+            const k = document.getElementById('searchInput').value.toLowerCase(); const stat = document.getElementById('statusFilter').value; const c = document.getElementById('listContainer'); c.innerHTML = '';
+            const f = globalDataList.filter(i => { let m = i.nama.toLowerCase().includes(k) || i.barang.toLowerCase().includes(k); if(stat === 'done') return m && i.isDone; if(stat === 'pending') return m && !i.isDone; return m; });
+            f.forEach(i => {
+                let sc = i.isDone ? 'status-done' : 'status-pending'; let bl = parseSmartItems(i.barang).map(b => `<li>${b}</li>`).join('');
+                c.innerHTML += `<div class="card mb-3 shadow-sm ${sc}" style="border-radius:12px; border:none;"><div class="card-body"><div class="d-flex justify-content-between"><div><h6 class="fw-bold mb-1">${i.nama}</h6><small class="text-muted d-block mb-2">${i.kode}</small></div>${i.isDone?'<span class="badge bg-success align-self-start">Selesai</span>':''}</div><div class="bg-light p-3 rounded-3 mb-3"><ul class="mb-0 text-secondary ps-3 small" style="line-height:1.6">${bl}</ul></div><button class="btn ${i.isDone?'btn-success':'btn-primary'} w-100 rounded-pill py-2" onclick="bukaKamera('${i.nama}',${i.rowIndex})"><i class="fas fa-camera me-1"></i> ${i.isDone?'Update Bukti':'Ambil Foto'}</button></div></div>`;
+            });
+        }
+        function kirimSuica() { const n = document.getElementById('inputSuicaNominal').value; if(!n) return Swal.fire('Error','Isi nominal','error'); fetchGAS('input_suica', {nominal:n}).then(()=>{ Swal.fire('Sukses','Tersimpan','success'); document.getElementById('inputSuicaNominal').value=''; loadSuicaHistory(); }); }
+        function loadSuicaHistory() { 
+            fetchGAS('get_suica_history').then(data => { 
+                const c = document.getElementById('suicaHistory'); c.innerHTML=''; 
+                if(!data.length) { c.innerHTML='<p class="text-center small text-muted">Belum ada data.</p>'; return; }
+                data.forEach(r => { 
+                    if(!r[0]) return;
+                    let dateStr = r[0]; try{ let d = new Date(r[0]); if(!isNaN(d)) dateStr = d.toLocaleDateString('id-ID', {day:'numeric', month:'short'}) + ', ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}); }catch(e){}
+                    let nom = parseInt(r[1]); let nomStr = isNaN(nom) ? "0" : nom.toLocaleString();
+                    c.innerHTML+=`<div class="history-item"><span class="small text-muted">${dateStr}</span><span class="fw-bold text-dark">¥${nomStr}</span></div>`; 
+                }); 
+            }); 
+        }
+        
+        function bukaKamera(n,r) { currentNamaData={nama:n,rowIndex:r}; document.getElementById('cameraInput').click(); }
+        document.getElementById('cameraInput').addEventListener('change', e => { if(e.target.files.length) resizeImage(e.target.files[0],1024).then(b => { fetchGAS('upload_bukti', {image:b, nama:currentNamaData.nama, rowIndex:currentNamaData.rowIndex, sheetName:document.getElementById('sheetSelector').value}).then(() => { Swal.fire('Berhasil','Data terupdate!','success'); globalDataList.find(x=>x.rowIndex===currentNamaData.rowIndex).isDone=true; filterLocalData(); }); }); });
+        
+        function resizeImage(file, maxWidth) { return new Promise((resolve) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const ratio = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * ratio; cvs.getContext('2d').drawImage(img, 0, 0, cvs.width, cvs.height); resolve(cvs.toDataURL('image/jpeg', 0.7)); }; }; }); }
+    </script>
+</body>
+</html>
