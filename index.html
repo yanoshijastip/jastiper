@@ -576,11 +576,59 @@
             document.getElementById('belanjaCount').innerText = count + ' Item';
         }
         function updateStatusBelanja(uniqueId, newStatus) {
-            let obj = flattenedBelanjaList.find(o => o.uniqueId === uniqueId); if(!obj) return;
-            obj.status = newStatus; saveToLocal('yanoshi_belanja', flattenedBelanjaList);
-            let cardEl = document.getElementById(`card-${uniqueId}`);
-            if(cardEl) { cardEl.className = `shopping-card`; if(newStatus === 'Sudah') cardEl.classList.add('card-sudah'); else if(newStatus === 'Tidak Ada') cardEl.classList.add('card-tidak'); else cardEl.classList.add('card-belum'); }
-            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_status_belanja', rowIndex: obj.rowIndex, itemIndex: obj.itemIndex, totalItems: obj.totalItems, newStatus: newStatus, nama: obj.nama, item: obj.item, lokasi: obj.lokasi }) }).catch(err => console.log("Bg sync err"));
+            let obj = flattenedBelanjaList.find(o => o.uniqueId === uniqueId); 
+            if(!obj) return;
+
+            // Tampilkan Popup Konfirmasi
+            Swal.fire({
+                title: 'Ubah status item ini?',
+                text: `Status barang "${obj.item}" akan diubah menjadi: ${newStatus}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0487D9', /* Warna biru tema aplikasi */
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Ubah',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika User klik "Ya, Ubah" -> Jalankan update
+                    obj.status = newStatus; 
+                    saveToLocal('yanoshi_belanja', flattenedBelanjaList);
+                    
+                    let cardEl = document.getElementById(`card-${uniqueId}`);
+                    if(cardEl) { 
+                        cardEl.className = `shopping-card`; 
+                        if(newStatus === 'Sudah') cardEl.classList.add('card-sudah'); 
+                        else if(newStatus === 'Tidak Ada') cardEl.classList.add('card-tidak'); 
+                        else cardEl.classList.add('card-belum'); 
+                    }
+
+                    // Tampilkan notifikasi sukses kecil (opsional agar user yakin)
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: 'Status diperbarui.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    // Kirim ke Google Sheet (berjalan di background)
+                    fetch(GAS_URL, { 
+                        method: 'POST', 
+                        mode: 'no-cors', 
+                        body: JSON.stringify({ 
+                            action: 'update_status_belanja', 
+                            rowIndex: obj.rowIndex, 
+                            itemIndex: obj.itemIndex, 
+                            totalItems: obj.totalItems, 
+                            newStatus: newStatus, 
+                            nama: obj.nama, 
+                            item: obj.item, 
+                            lokasi: obj.lokasi 
+                        }) 
+                    }).catch(err => console.log("Bg sync err"));
+                }
+            });
         }
 
         function loadSheetNames() { 
