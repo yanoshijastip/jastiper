@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin Jastip to Jastiper</title>
+    <title>Monitor Jastiper</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,41 +11,49 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* TEMA BIRU (SAMA DENGAN USER) */
+        /* TEMA BIRU */
         :root { --primary-color: #0487D9; --primary-light: #e6f2fa; --bg-body: #f4f7f6; --card-radius: 16px; }
         
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-body); padding-bottom: 30px; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-body); padding-bottom: 30px; overscroll-behavior-y: none; }
         .navbar { background-color: white !important; box-shadow: 0 4px 20px rgba(0,0,0,0.03); z-index: 1050; }
         .btn-home-nav { color: var(--primary-color); background: var(--primary-light); border-radius: 12px; width: 42px; height: 42px; border: none; }
         
+        /* Grid Menu (3x2) */
         .home-menu-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 5px; }
-        .menu-card { background: white; border-radius: var(--card-radius); padding: 20px 15px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.03); cursor: pointer; height: 100%; border: 1px solid rgba(0,0,0,0.02); }
+        .menu-card { background: white; border-radius: var(--card-radius); padding: 20px 15px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.03); cursor: pointer; height: 100%; border: 1px solid rgba(0,0,0,0.02); transition: transform 0.2s; }
+        .menu-card:active { transform: scale(0.97); }
         .menu-icon-box { width: 50px; height: 50px; background: var(--primary-light); color: var(--primary-color); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 12px; }
         .menu-text h5 { font-weight: 600; margin: 0; font-size: 0.9rem; color: #2c3e50; }
         .menu-text small { font-size: 0.7rem; color: #7f8c8d; }
 
-        .form-control { border-radius: 10px; padding: 12px; border: 1px solid #eee; margin-bottom: 5px; }
+        .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #eee; margin-bottom: 5px; }
         .btn-primary { background: var(--primary-color); border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: 600; }
         
-        /* ITEM LIST BLOCK */
-        .item-block {
-            background: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #eee;
-            margin-bottom: 15px;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        .btn-remove-item {
-            position: absolute; top: 10px; right: 10px;
-            color: #dc3545; background: #fff5f5; border:none;
-            width: 30px; height: 30px; border-radius: 50%;
-            display:flex; align-items:center; justify-content:center;
-        }
+        /* ITEM LIST BLOCK (Input Multi) */
+        .item-block { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .btn-remove-item { position: absolute; top: 10px; right: 10px; color: #dc3545; background: #fff5f5; border:none; width: 30px; height: 30px; border-radius: 50%; display:flex; align-items:center; justify-content:center; }
+
+        /* SHOPPING CARD (TAMPILAN MONITOR) */
+        .shopping-card { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s; position: relative; }
+        .card-sudah { background: #d1e7dd !important; color: #0f5132; }
+        .card-belum { background: #f8d7da !important; color: #842029; }
+        .card-tidak { background: #e2e3e5 !important; color: #41464b; opacity: 0.75; }
+        .card-sudah .item-name, .card-sudah .shopper-info, .card-sudah i { color: #0f5132 !important; }
+        .card-belum .item-name, .card-belum .shopper-info, .card-belum i { color: #842029 !important; }
+        .card-tidak .item-name, .card-tidak .shopper-info, .card-tidak i { color: #41464b !important; }
+        .shopping-content-wrapper { display: flex; gap: 15px; padding: 15px; align-items: center; }
+        .shopping-img-box { width: 65px; height: 65px; border-radius: 12px; background-color: rgba(255,255,255,0.5); overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .shopping-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .shopping-body { padding: 0 !important; flex-grow: 1; }
+        .item-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
+        .shopper-info { font-size: 0.85rem; display: flex; gap: 10px; opacity: 0.9; }
+        .status-badge { padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; margin-top: 5px; display: inline-block; }
+        .card-sudah .status-badge { background: rgba(15, 81, 50, 0.1); }
+        .card-belum .status-badge { background: rgba(132, 32, 41, 0.1); }
+        .card-tidak .status-badge { background: rgba(65, 70, 75, 0.1); }
 
         .history-list { max-height: 300px; overflow-y: auto; background: white; padding: 15px; border-radius: 16px; margin-top: 15px; }
-        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; align-items: center; }
+        .history-item { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
         
         .card-preview { position: relative; width: 80px; height: 80px; border-radius: 10px; overflow: hidden; border: 1px solid #dee2e6; margin-top: 10px; display: none; }
         .card-preview img { width: 100%; height: 100%; object-fit: cover; }
@@ -53,6 +61,8 @@
         .loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.85); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; }
         .sticky-wrapper { position: sticky; top: 0; z-index: 1040; background: var(--bg-body); padding-bottom: 10px; }
         .page-header { background: white; padding: 15px 20px; border-radius: 0 0 20px 20px; display: flex; align-items: center; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -64,45 +74,82 @@
 
     <nav class="navbar sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
-            <span class="navbar-brand mb-0 h1 fw-bold text-primary">Dashboard Koordinasi</span>
+            <span class="navbar-brand mb-0 h1 fw-bold text-primary">Monitor Jastiper</span>
             <button class="btn-home-nav" onclick="goTo('home')"><i class="fas fa-home"></i></button>
         </div>
     </nav>
 
-    <div id="view-home" class="container mt-4">
+    <div id="view-home" class="container mt-4 fade-in">
         <div class="mb-4 ps-1">
             <h5 class="fw-bold mb-0 text-dark">Halo, Admin!</h5>
-            <small class="text-muted">Koordinasi dokumentasi dengan Jastiper disini.</small>
+            <small class="text-muted">Pantau dokumentasi Jastiper di sini.</small>
         </div>
 
         <div class="home-menu-container">
             <div class="menu-card" onclick="goTo('input')">
                 <div class="menu-icon-box"><i class="fas fa-cart-plus"></i></div>
-                <div class="menu-text"><h5>Input List Belanja</h5><small>Tambah list & foto</small></div>
+                <div class="menu-text"><h5>Input Belanja</h5><small>Tambah list & foto</small></div>
+            </div>
+            <div class="menu-card" onclick="goTo('monitor')">
+                <div class="menu-icon-box"><i class="fas fa-desktop"></i></div>
+                <div class="menu-text"><h5>Monitor Belanja</h5><small>Pantau list belanjaan</small></div>
             </div>
             <div class="menu-card" onclick="goTo('note')">
                 <div class="menu-icon-box"><i class="fas fa-sticky-note"></i></div>
-                <div class="menu-text"><h5>Tulis Note</h5><small>Buat catatan baru</small></div>
+                <div class="menu-text"><h5>Tulis Note</h5><small>Buat catatan untuk Jastiper</small></div>
             </div>
             <div class="menu-card" onclick="goTo('struk')">
                 <div class="menu-icon-box"><i class="fas fa-receipt"></i></div>
-                <div class="menu-text"><h5>Cek Backup Struk</h5><small>Lihat riwayat upload</small></div>
+                <div class="menu-text"><h5>Cek Struk</h5><small>Riwayat upload</small></div>
             </div>
             <div class="menu-card" onclick="goTo('suica')">
                 <div class="menu-icon-box"><i class="fas fa-subway"></i></div>
-                <div class="menu-text"><h5>Cek Riwayat Suica</h5><small>Lihat riwayat input</small></div>
+                <div class="menu-text"><h5>Cek Suica</h5><small>Riwayat input</small></div>
+            </div>
+            <div class="menu-card" onclick="window.open('https://docs.google.com/spreadsheets/d/1T9BMpmRWDhJl6MQbYPlRU_7ewdjLyC4bpB4OZUbWefE/edit?gid=0#gid=0', '_blank')">
+                <div class="menu-icon-box" style="background:#e8f5e9; color:#198754;"><i class="fas fa-database"></i></div>
+                <div class="menu-text"><h5>Lihat Database</h5><small>Buka Google Sheet</small></div>
             </div>
         </div>
     </div>
 
-    <div id="view-input" style="display:none;">
+    <div id="view-monitor" class="fade-in" style="display:none;">
+        <div class="sticky-wrapper">
+            <div class="page-header">
+                <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                <h6 class="fw-bold mb-0">Monitor Barang Belanjaan</h6>
+            </div>
+            <div class="bg-white px-3 border-bottom shadow-sm" style="border-radius: 16px; margin: 0 15px;">
+                <div class="row g-2 pt-3 pb-3">
+                    <div class="col-12">
+                        <input type="text" id="searchMonitor" class="form-control" placeholder="Cari kustomer / barang..." onkeyup="filterMonitor()">
+                    </div>
+                    <div class="col-12">
+                         <select id="filterStatusMonitor" class="form-select" onchange="filterMonitor()">
+                            <option value="all">Semua Status</option>
+                            <option value="sudah">Sudah Dibelanjakan</option>
+                            <option value="belum">Belum Dibelanjakan</option>
+                            <option value="tidak">Barang Tidak Ada</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-end"><small id="monitorCount" class="text-muted" style="font-size: 0.75rem;">0 Item</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="container mt-3 pb-5">
+            <button class="btn btn-outline-primary w-100 mb-3 shadow-sm rounded-pill py-2" onclick="loadMonitorBelanja()"><i class="fas fa-sync-alt me-1"></i> Refresh Data</button>
+            <div id="monitorContainer"></div>
+        </div>
+    </div>
+
+    <div id="view-input" class="fade-in" style="display:none;">
         <div class="sticky-wrapper">
             <div class="page-header">
                 <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
                 <h6 class="fw-bold mb-0">Input List Belanja</h6>
             </div>
         </div>
-        <div class="container">
+        <div class="container pb-4">
             <div class="card p-4 border-0 shadow-sm rounded-4 mb-3">
                 <label class="small text-muted fw-bold">Nama Customer</label>
                 <input type="text" id="inpNama" class="form-control" placeholder="Contoh: Budi" oninput="saveDraft()">
@@ -110,17 +157,17 @@
 
             <div id="itemsContainer"></div>
 
-            <button class="btn btn-outline-primary w-100 mb-3 dashed-border" onclick="addItemBlock()">
-                <i class="fas fa-plus"></i> Tambah Barang
+            <button class="btn btn-outline-primary w-100 mb-3" style="border-style: dashed; border-width: 2px;" onclick="addItemBlock()">
+                <i class="fas fa-plus"></i> Tambah Barang Baru
             </button>
 
             <button class="btn btn-primary w-100 py-3 shadow-sm rounded-pill" onclick="submitBelanjaMulti()">
-                <i class="fas fa-save me-2"></i> INPUT SEMUA LIST
+                <i class="fas fa-save me-2"></i> KIRIM SEMUA LIST
             </button>
         </div>
     </div>
 
-    <div id="view-note" style="display:none;">
+    <div id="view-note" class="fade-in" style="display:none;">
         <div class="sticky-wrapper">
             <div class="page-header">
                 <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
@@ -137,7 +184,7 @@
         </div>
     </div>
 
-    <div id="view-struk" style="display:none;">
+    <div id="view-struk" class="fade-in" style="display:none;">
         <div class="sticky-wrapper">
             <div class="page-header">
                 <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
@@ -150,7 +197,7 @@
         </div>
     </div>
 
-    <div id="view-suica" style="display:none;">
+    <div id="view-suica" class="fade-in" style="display:none;">
         <div class="sticky-wrapper">
             <div class="page-header">
                 <button class="btn btn-sm btn-light border me-3" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
@@ -168,10 +215,10 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwZrBQUM_pQt5udDGPKev9seg0zz-Q0zkdT4fBbrDfFtkGd7owgp9WLhHz6jFYdSHEtNw/exec";
 
         let blockCounter = 0;
-        let itemImages = {}; // Menyimpan data gambar per block ID
+        let itemImages = {}; 
+        let flattenedMonitorList = [];
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Load Draft Input Belanja
             const savedName = localStorage.getItem('draft_admin_nama');
             if (savedName) document.getElementById('inpNama').value = savedName;
 
@@ -179,10 +226,9 @@
             if (savedItems.length > 0) {
                 savedItems.forEach(item => addItemBlock(item.item, item.loc));
             } else {
-                addItemBlock(); // Default 1 block kosong
+                addItemBlock(); 
             }
 
-            // Load Draft Note
             const savedNote = localStorage.getItem('draft_admin_note');
             if (savedNote) document.getElementById('inpNote').value = savedNote;
         });
@@ -191,20 +237,141 @@
         function goTo(view) {
             document.querySelectorAll('[id^="view-"]').forEach(el => el.style.display='none');
             document.getElementById('view-'+view).style.display = 'block';
+            window.scrollTo(0,0);
             
             if(view === 'note') loadNotes();
             if(view === 'struk') loadStrukHistory();
             if(view === 'suica') loadSuicaHistory();
+            if(view === 'monitor') loadMonitorBelanja(); 
+        }
+
+        // --- FITUR MONITOR BELANJA & HAPUS ---
+        function parseSmartItems(text) {
+            if (!text) return [];
+            let rawItems = text.split(/[\n,]+/);
+            return rawItems.map(item => item.replace(/^[\d\.\-\*\•\s\)]+/, '').trim()).filter(item => item !== "");
+        }
+
+        function loadMonitorBelanja() {
+            fetchGAS('get_belanja').then(data => {
+                let processedList = [];
+                data.forEach(row => {
+                    let items = parseSmartItems(row.items);
+                    let statuses = row.statusRaw.split(',').map(s => s.trim());
+                    let images = row.imagesRaw ? row.imagesRaw.split(',') : [];
+                    
+                    items.forEach((item, index) => {
+                        let currentStat = statuses[index] ? statuses[index] : 'Belum';
+                        let currentImg = images[index] ? images[index].trim() : '';
+                        processedList.push({ 
+                            uniqueId: `${row.rowIndex}-${index}`,
+                            rowIndex: row.rowIndex,
+                            itemIndex: index,
+                            totalItems: items.length,
+                            nama: row.nama, 
+                            item: item, 
+                            lokasi: row.lokasi, 
+                            status: currentStat, 
+                            image: currentImg 
+                        });
+                    });
+                });
+                flattenedMonitorList = processedList;
+                filterMonitor();
+            });
+        }
+
+        function filterMonitor() {
+            const keyword = document.getElementById('searchMonitor').value.toLowerCase();
+            const filterStat = document.getElementById('filterStatusMonitor').value;
+            const container = document.getElementById('monitorContainer'); 
+            container.innerHTML = '';
+            
+            let count = 0;
+            flattenedMonitorList.forEach(obj => {
+                let cardClass = 'card-belum';
+                let displayStatus = 'BELUM DIBELANJAKAN';
+                let iconStatus = 'fa-times-circle';
+                
+                if(obj.status.toLowerCase().includes('sudah')) {
+                    cardClass = 'card-sudah'; displayStatus = 'SUDAH DIBELANJAKAN'; iconStatus = 'fa-check-circle';
+                }
+                if(obj.status.toLowerCase().includes('tidak')) {
+                    cardClass = 'card-tidak'; displayStatus = 'HABIS / TIDAK ADA'; iconStatus = 'fa-ban';
+                }
+                
+                let textMatch = obj.nama.toLowerCase().includes(keyword) || obj.item.toLowerCase().includes(keyword) || obj.lokasi.toLowerCase().includes(keyword);
+                let statusMatch = true;
+                if(filterStat === 'sudah' && !cardClass.includes('sudah')) statusMatch = false;
+                if(filterStat === 'belum' && !cardClass.includes('belum')) statusMatch = false;
+                if(filterStat === 'tidak' && !cardClass.includes('tidak')) statusMatch = false;
+
+                if(textMatch && statusMatch) {
+                    count++;
+                    let imgHtml = obj.image ? `<img src="${obj.image}" onclick="Swal.fire({imageUrl: '${obj.image}', showConfirmButton: false})">` : `<i class="fas fa-box-open text-muted" style="font-size:1.5rem"></i>`;
+                    
+                    let html = `
+                    <div class="shopping-card ${cardClass}">
+                        <button class="btn btn-sm text-danger position-absolute top-0 end-0 m-2 border-0 bg-transparent" style="z-index: 10;" onclick="deleteMonitorItem('${obj.uniqueId}')">
+                            <i class="fas fa-trash fa-lg"></i>
+                        </button>
+                        <div class="shopping-content-wrapper position-relative">
+                            <div class="shopping-img-box">${imgHtml}</div>
+                            <div class="shopping-body pe-4">
+                                <div class="item-name">${obj.item}</div>
+                                <div class="shopper-info">
+                                    <span><i class="fas fa-user"></i> ${obj.nama}</span>
+                                    <span><i class="fas fa-map-marker-alt"></i> ${obj.lokasi}</span>
+                                </div>
+                                <div class="status-badge"><i class="fas ${iconStatus}"></i> ${displayStatus}</div>
+                            </div>
+                        </div>
+                    </div>`;
+                    container.innerHTML += html;
+                }
+            });
+            document.getElementById('monitorCount').innerText = count + ' Item';
+        }
+
+        // FUNGSI HAPUS BELANJA
+        function deleteMonitorItem(uniqueId) {
+            let obj = flattenedMonitorList.find(o => o.uniqueId === uniqueId);
+            if(!obj) return;
+            
+            Swal.fire({
+                title: 'Hapus Item?',
+                text: "Barang ini akan dihapus permanen dari sistem.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetchGAS('delete_belanja_item', { 
+                        rowIndex: obj.rowIndex, 
+                        itemIndex: obj.itemIndex, 
+                        totalItems: obj.totalItems 
+                    }).then(res => {
+                        if(res.status === 'success') {
+                            Swal.fire('Terhapus!', 'Barang berhasil dihapus.', 'success');
+                            loadMonitorBelanja(); // Refresh data dari Sheet agar Index terupdate
+                        } else {
+                            Swal.fire('Error', res.message, 'error');
+                        }
+                    });
+                }
+            });
         }
 
         // --- FITUR MULTI ITEM + AUTO SAVE ---
-        
         function addItemBlock(defaultItem = '', defaultLoc = '') {
             blockCounter++;
             const id = blockCounter;
             
             const html = `
-            <div class="item-block" id="block-${id}">
+            <div class="item-block fade-in" id="block-${id}">
                 <button class="btn-remove-item" onclick="removeBlock(${id})"><i class="fas fa-times"></i></button>
                 
                 <label class="small text-muted fw-bold">NAMA BARANG</label>
@@ -213,7 +380,7 @@
                 <label class="small text-muted fw-bold mt-2">LOKASI BELANJA</label>
                 <input type="text" class="form-control inp-item-loc" placeholder="Contoh: Donki" value="${defaultLoc}" oninput="saveDraft()">
                 
-                <label class="small text-muted fw-bold mt-2">FOTO REFERENSI</label>
+                <label class="small text-muted fw-bold mt-2">FOTO REFERENSI (Opsional)</label>
                 <input type="file" accept="image/*" class="form-control" onchange="handleImage(this, ${id})">
                 <div id="preview-${id}" class="card-preview"></div>
             </div>`;
@@ -240,7 +407,6 @@
             }
         }
 
-        // Fungsi Auto Save ke LocalStorage (Anti Refresh)
         function saveDraft() {
             const nama = document.getElementById('inpNama').value;
             localStorage.setItem('draft_admin_nama', nama);
@@ -267,7 +433,7 @@
             document.getElementById('itemsContainer').innerHTML = '';
             itemImages = {};
             blockCounter = 0;
-            addItemBlock(); // Reset ke 1 block kosong
+            addItemBlock(); 
         }
 
         function submitBelanjaMulti() {
@@ -275,36 +441,31 @@
             if(!nama) return Swal.fire('Error', 'Nama Kustomer wajib diisi', 'warning');
 
             const payloadItems = [];
-            let isValid = true;
-
             document.querySelectorAll('.item-block').forEach(block => {
                 const id = block.id.replace('block-', '');
                 const itemName = block.querySelector('.inp-item-name').value;
                 const itemLoc = block.querySelector('.inp-item-loc').value;
                 const img = itemImages[id] || null;
 
-                if(itemName) {
-                    payloadItems.push({ item: itemName, lokasi: itemLoc, image: img });
-                }
+                if(itemName) payloadItems.push({ item: itemName, lokasi: itemLoc, image: img });
             });
 
             if(payloadItems.length === 0) return Swal.fire('Error', 'Minimal isi 1 barang', 'warning');
 
             fetchGAS('add_belanja_multi', { nama: nama, items: payloadItems }).then(res => {
                 Swal.fire('Sukses', res.message, 'success');
-                clearDraftBelanja(); // Hapus draft jika sukses
+                clearDraftBelanja(); 
             });
         }
 
-        // --- FITUR LAIN ---
-        
+        // --- FITUR NOTE & HAPUS ---
         function submitNote() {
             const note = document.getElementById('inpNote').value;
             if(!note) return;
             fetchGAS('add_note', {note}).then(() => {
                 Swal.fire('Sukses', 'Catatan terkirim', 'success');
                 document.getElementById('inpNote').value = '';
-                localStorage.removeItem('draft_admin_note'); // Clear draft
+                localStorage.removeItem('draft_admin_note');
                 loadNotes();
             });
         }
@@ -313,17 +474,53 @@
             fetchGAS('get_notes').then(data => {
                 const c = document.getElementById('noteHistory'); c.innerHTML = '';
                 if(!data.length) { c.innerHTML = '<small class="text-muted">Kosong</small>'; return; }
-                data.forEach(r => c.innerHTML += `<div class="history-item"><span>${r[0]}</span></div>`);
+                data.forEach(r => {
+                    // r[0] = note, r[1] = rowIndex
+                    c.innerHTML += `
+                    <div class="history-item d-flex justify-content-between align-items-start">
+                        <span class="text-wrap pe-3" style="line-height: 1.5; font-size: 0.9rem;">${r[0]}</span>
+                        <button class="btn btn-sm btn-outline-danger border-0 flex-shrink-0" onclick="deleteNote(${r[1]})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>`;
+                });
             });
         }
 
+        // FUNGSI HAPUS NOTE
+        function deleteNote(rowIndex) {
+            Swal.fire({
+                title: 'Hapus Catatan?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Ya, Hapus'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetchGAS('delete_note', { rowIndex: rowIndex }).then(res => {
+                        if(res.status === 'success') {
+                            Swal.fire('Terhapus', res.message, 'success');
+                            loadNotes(); // Refresh
+                        } else {
+                            Swal.fire('Error', res.message, 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        // --- OTHER READERS ---
         function loadStrukHistory() {
             fetchGAS('get_struk_history').then(data => {
                 const c = document.getElementById('strukHistory'); c.innerHTML = '';
                 if(!data.length) { c.innerHTML = '<small class="text-muted">Kosong</small>'; return; }
                 data.forEach(r => {
                     let d = new Date(r[0]); let ds = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-                    c.innerHTML += `<div class="history-item"><div><div class="item-label">${ds}</div></div><a href="${r[1]}" target="_blank" class="btn btn-sm btn-light border">Buka</a></div>`;
+                    c.innerHTML += `
+                    <div class="history-item d-flex justify-content-between align-items-center">
+                        <div class="item-label">${ds}</div>
+                        <a href="${r[1]}" target="_blank" class="btn btn-sm btn-light border">Buka Folder</a>
+                    </div>`;
                 });
             });
         }
@@ -334,7 +531,11 @@
                 if(!data.length) { c.innerHTML = '<small class="text-muted">Kosong</small>'; return; }
                 data.forEach(r => {
                     let d = new Date(r[0]); let ds = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-                    c.innerHTML += `<div class="history-item"><div><div class="item-label">${ds}</div></div><div class="fw-bold">¥${parseInt(r[1]).toLocaleString()}</div></div>`;
+                    c.innerHTML += `
+                    <div class="history-item d-flex justify-content-between align-items-center">
+                        <div class="item-label">${ds}</div>
+                        <div class="fw-bold text-dark">¥${parseInt(r[1]).toLocaleString()}</div>
+                    </div>`;
                 });
             });
         }
