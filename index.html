@@ -63,10 +63,10 @@
 
         /* --- GRID MENU --- */
         .home-menu-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 5px; }
-        .menu-card { background: white; border-radius: var(--card-radius); padding: 20px 15px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 20px rgba(0,0,0,0.03); transition: transform 0.2s; cursor: pointer; height: 100%; }
+        .menu-card { background: white; border-radius: var(--card-radius); padding: 20px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 20px rgba(0,0,0,0.03); transition: transform 0.2s; cursor: pointer; height: 100%; }
         .menu-card:active { transform: scale(0.97); }
         .menu-icon-box { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%); color: var(--primary-color); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(4, 135, 217, 0.1); }
-        .menu-text h5 { font-weight: 600; margin: 0 0 4px 0; color: var(--text-dark); font-size: 0.9rem; line-height: 1.3; }
+        .menu-text h5 { font-weight: 600; margin: 0 0 4px 0; color: var(--text-dark); font-size: 0.85rem; line-height: 1.3; }
         .menu-text small { color: var(--text-muted); font-size: 0.7rem; line-height: 1.2; display: block; }
 
         /* --- NOTE & HISTORY --- */
@@ -100,6 +100,12 @@
         .shopping-actions { display: flex; background-color: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border-top: 1px solid rgba(0,0,0,0.05); }
         .btn-action { flex: 1; border: none; background: transparent; padding: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 
+        /* --- PREVIEW --- */
+        #previewArea { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px; }
+        .card-preview { position: relative; width: 100px; height: 100px; border-radius: 12px; overflow: hidden; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-remove { position: absolute; top: 4px; right: 4px; background: rgba(220, 53, 69, 0.9); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+
         /* --- UTILS --- */
         .sticky-wrapper { position: sticky; top: 0; z-index: 1040; background: var(--bg-body); padding-bottom: 10px; }
         .page-header { background: white; padding: 15px 20px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; margin-bottom: 15px; }
@@ -108,6 +114,9 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .form-control, .form-select { border-radius: 10px; border: 1px solid #e0e0e0; padding: 10px 15px; }
         .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(4, 135, 217, 0.1); }
+        
+        /* Tweak untuk detail tag Logistik Indo Jepang */
+        details summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 <body>
@@ -173,7 +182,7 @@
                 </div>
                 <div class="menu-card" onclick="goTo('list')">
                     <div class="menu-icon-box"><i class="fas fa-users"></i></div>
-                    <div class="menu-text"><h5>List Jastip</h5><small>Cek & upload bukti</small></div>
+                    <div class="menu-text"><h5>List Jastip</h5><small>List Jepang - Indo</small></div>
                 </div>
                 <div class="menu-card" onclick="goTo('belanja')">
                     <div class="menu-icon-box"><i class="fas fa-shopping-bag"></i></div>
@@ -181,12 +190,17 @@
                 </div>
                 <div class="menu-card" onclick="goTo('suica')">
                     <div class="menu-icon-box"><i class="fas fa-subway"></i></div>
-                    <div class="menu-text"><h5>Catat Suica</h5><small>Input pengeluaran</small></div>
+                    <div class="menu-text"><h5>Catat Suica</h5><small>Input topup suica</small></div>
                 </div>
                 
-                <div class="menu-card" onclick="window.open('https://docs.google.com/spreadsheets/d/1jZGl8WzxS5y3U2HVSUKVj8Bos-C8laZCRlQbXtvoY0Y/edit?gid=1225590155#gid=1225590155', '_blank')" style="grid-column: 1 / -1;">
-                    <div class="menu-icon-box" style="background:#e8f5e9; color:#198754; width: 60px; height: 60px;"><i class="fas fa-table fa-lg"></i></div>
-                    <div class="menu-text"><h5>Buka Spreadsheet Utama</h5><small>Akses data master list jastip</small></div>
+                <div class="menu-card" onclick="window.open('https://docs.google.com/spreadsheets/d/1jZGl8WzxS5y3U2HVSUKVj8Bos-C8laZCRlQbXtvoY0Y/edit?gid=1225590155#gid=1225590155', '_blank')">
+                    <div class="menu-icon-box" style="background:#e8f5e9; color:#198754;"><i class="fas fa-table fa-lg"></i></div>
+                    <div class="menu-text"><h5>Data Utama</h5><small>Buka master data</small></div>
+                </div>
+
+                <div class="menu-card" onclick="goTo('indojepang')">
+                    <div class="menu-icon-box" style="background:#fdf2e9; color:#f59e0b;"><i class="fas fa-plane-departure"></i></div>
+                    <div class="menu-text"><h5>Indo - Jepang</h5><small>List nama & alamat</small></div>
                 </div>
             </div>
 
@@ -198,6 +212,27 @@
                 <div id="noteList" class="note-scroll-area">
                     <div class="text-center text-muted small py-3">Memuat catatan...</div>
                 </div>
+            </div>
+        </div>
+
+        <div id="view-indojepang" class="fade-in" style="display: none;">
+            <div class="sticky-wrapper">
+                <div class="page-header">
+                    <button class="btn btn-light btn-sm me-3 border" onclick="goTo('home')"><i class="fas fa-arrow-left"></i></button>
+                    <h6 class="fw-bold mb-0">Logistik Indo-Jepang</h6>
+                </div>
+                <div class="bg-white px-3 border-bottom shadow-sm" style="border-radius: 16px; margin: 0 15px;">
+                    <select id="logistikSheetSelect" class="form-select mb-2 mt-2 border-0 bg-light fw-medium" onchange="loadLogistikData()">
+                        <option value="" disabled selected>Pilih Sheet Data...</option>
+                    </select>
+                    <div class="pb-3 position-relative">
+                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <input type="text" id="searchLogistikInput" class="form-control ps-5" placeholder="Cari kode, nama pengirim/penerima..." oninput="filterLogistikData()">
+                    </div>
+                </div>
+            </div>
+            <div class="container mt-3 pb-5" id="logistikDataContainer">
+                <div class="text-center py-5 text-muted small bg-white rounded-4 shadow-sm border m-2">Silakan pilih sheet terlebih dahulu.</div>
             </div>
         </div>
 
@@ -300,10 +335,16 @@
     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyM2ZiDT6LM4gIQSVGjQ5cw2xSe1wHdcSo3xbPF6ps9vwa3eP8mcECIzL_psctTMey0nw/exec"; 
+        // URL GAS UTAMA (Jastip)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwZrBQUM_pQt5udDGPKev9seg0zz-Q0zkdT4fBbrDfFtkGd7owgp9WLhHz6jFYdSHEtNw/exec"; 
+        
+        // URL GAS LOGISTIK (Indo Jepang)
+        const LOGISTIK_URL = "https://script.google.com/macros/s/AKfycbzbzS2gViZhN3c9rk-cyQROMwNxRwLVn_t9UF04TWDcuKyxVPxYYF-TQvPvNcMmCbkC6A/exec";
 
+        // State Global
         let globalDataList = [];
         let flattenedBelanjaList = []; 
+        let globalLogistikData = []; // Data Indo Jepang
         let filesToUpload = [];
         let currentNamaData = null;
 
@@ -362,10 +403,13 @@
         function goTo(view) {
             document.querySelectorAll('[id^="view-"]').forEach(el => { if(el.id !== 'view-splash' && el.id !== 'view-login') el.style.display = 'none'; });
             document.getElementById('view-' + view).style.display = 'block'; window.scrollTo(0,0);
+            
             if(view === 'list' && document.getElementById('sheetSelector').options.length <= 1) loadSheetNames();
             if(view === 'belanja') { loadLocalBelanja(); loadBelanja(); }
             if(view === 'suica') loadSuicaHistory();
             if(view === 'struk') loadStrukHistory();
+            // Load Sheets untuk menu Indo Jepang jika belum ada
+            if(view === 'indojepang' && document.getElementById('logistikSheetSelect').options.length <= 1) fetchLogistikSheets();
         }
 
         function fetchGAS(action, payload = {}) {
@@ -377,6 +421,142 @@
         function saveToLocal(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
         function getFromLocal(key) { const data = localStorage.getItem(key); return data ? JSON.parse(data) : null; }
 
+        // --- FUNGSI PENDETEKSI WARNA (TERANG / GELAP) ---
+        function getContrastYIQ(hexcolor) {
+            if (!hexcolor || hexcolor[0] !== '#') return '#2c3e50';
+            hexcolor = hexcolor.replace("#", "");
+            var r = parseInt(hexcolor.substr(0,2),16);
+            var g = parseInt(hexcolor.substr(2,2),16);
+            var b = parseInt(hexcolor.substr(4,2),16);
+            var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#2c3e50' : '#ffffff';
+        }
+
+        // --- DATA LOGISTIK INDO-JEPANG (INTEGRASI PROYEKSI) ---
+        async function fetchLogistikSheets() {
+            try {
+                setLoading(true);
+                const response = await fetch(`${LOGISTIK_URL}?action=getSheets`);
+                const result = await response.json();
+                
+                const select = document.getElementById('logistikSheetSelect');
+                select.innerHTML = '<option value="" disabled selected>Pilih Sheet Data...</option>';
+                
+                if (result.status === 'success') {
+                    result.data.forEach(sheet => { select.innerHTML += `<option value="${sheet}">${sheet}</option>`; });
+                    
+                    // --- LOGIKA BARU: Cek memori untuk memuat sheet terakhir ---
+                    const lastLogistikSheet = localStorage.getItem('yanoshi_last_logistik_sheet');
+                    if (lastLogistikSheet && result.data.includes(lastLogistikSheet)) {
+                        select.value = lastLogistikSheet; // Ubah dropdown
+                        loadLogistikData(); // Muat datanya secara otomatis
+                    }
+                }
+            } catch (error) { console.error("Gagal memuat sheet logistik", error); } finally { setLoading(false); }
+        }
+
+        async function loadLogistikData() {
+            const sheetName = document.getElementById('logistikSheetSelect').value;
+            const container = document.getElementById('logistikDataContainer');
+            
+            if (!sheetName) return;
+            
+            // --- LOGIKA BARU: Simpan pilihan sheet ke memori HP ---
+            localStorage.setItem('yanoshi_last_logistik_sheet', sheetName);
+
+            container.innerHTML = '';
+            setLoading(true);
+
+            try {
+                const response = await fetch(`${LOGISTIK_URL}?action=getData&sheetName=${encodeURIComponent(sheetName)}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    globalLogistikData = result.data;
+                    renderLogistikData(globalLogistikData);
+                } else {
+                    container.innerHTML = `<div class="bg-white p-3 rounded-3 text-danger text-center shadow-sm mx-2">${result.message}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="bg-white p-3 rounded-3 text-danger text-center shadow-sm mx-2">Terjadi kesalahan koneksi.</div>`;
+            } finally { setLoading(false); }
+        }
+
+        function renderLogistikData(data) {
+            const container = document.getElementById('logistikDataContainer');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="text-center py-5 text-muted small bg-white rounded-4 shadow-sm border m-2">Tidak ada data di sheet ini.</div>';
+                return;
+            }
+
+            data.forEach(item => {
+                const formattedList = item.listBarang ? item.listBarang.replace(/\n/g, '<br>') : '-';
+                const isCOD = item.statusCod && !item.statusCod.toLowerCase().includes('non');
+                const badgeColor = isCOD ? 'bg-success' : 'bg-secondary';
+                const waLink = item.noPenerima ? item.noPenerima.replace(/\D/g,'') : '';
+
+                // Desain Bootstrap meniru style Tailwind Proyeksi
+                const cardHTML = `
+                <div class="card mb-3 shadow-sm border" style="border-radius:16px; border-color:#f1f5f9;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                            <span class="badge bg-primary px-3 py-2" style="font-size:0.9rem; letter-spacing:1px;">${item.kode || '-'}</span>
+                            <span class="badge ${badgeColor} rounded-pill px-3 py-2" style="font-size:0.75rem;">${item.statusCod || '-'}</span>
+                        </div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-bold" style="font-size:10px; text-transform:uppercase; letter-spacing:1px;">Nama Pengirim</small>
+                                <span class="fw-bold text-dark fs-6">${item.pengirim || '-'}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-bold" style="font-size:10px; text-transform:uppercase; letter-spacing:1px;">Nama Penerima</small>
+                                <span class="fw-bold text-dark fs-6 d-block">${item.penerima || '-'}</span>
+                                <a href="https://wa.me/${waLink}" target="_blank" class="text-decoration-none text-success small fw-medium mt-1 d-inline-block">
+                                    <i class="fab fa-whatsapp"></i> ${item.noPenerima || '-'}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 d-flex align-items-start gap-2">
+                            <i class="fas fa-location-dot text-danger mt-1"></i>
+                            <div>
+                                <span class="d-block text-dark" style="font-size:0.9rem;">${item.alamat || '-'}</span>
+                                <span class="badge bg-light text-dark border mt-2 px-2 py-1">Kode Pos: ${item.kodePos || '-'}</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-light rounded p-3 mb-4 border">
+                            <details style="cursor:pointer;">
+                                <summary class="fw-medium text-primary small mb-1" style="outline:none;">
+                                    <i class="fas fa-cubes me-1"></i> Lihat List Barang (${item.jmlPack || '0'} Pack)
+                                </summary>
+                                <div class="mt-2 small text-secondary bg-white p-2 rounded border" style="line-height:1.6;">${formattedList}</div>
+                            </details>
+                        </div>
+
+                        <a href="${item.foto}" target="_blank" class="btn btn-outline-primary w-100 py-2 fw-medium" style="border-radius:10px;">
+                            <i class="far fa-id-card me-2"></i> Lihat Foto KTP
+                        </a>
+                    </div>
+                </div>`;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        function filterLogistikData() {
+            const query = document.getElementById('searchLogistikInput').value.toLowerCase();
+            if (!query) { renderLogistikData(globalLogistikData); return; }
+            
+            const filtered = globalLogistikData.filter(item => {
+                return Object.values(item).some(val => String(val).toLowerCase().includes(query));
+            });
+            renderLogistikData(filtered);
+        }
+
+        // --- APP LOGIC LAINNYA ---
         function loadNotes() {
             const container = document.getElementById('noteList');
             container.innerHTML = '<div class="text-center text-muted small py-3"><div class="spinner-border spinner-border-sm text-primary mb-2"></div><br>Memuat catatan...</div>';
@@ -434,38 +614,19 @@
             document.getElementById('belanjaCount').innerText = count + ' Item';
         }
 
-        // --- FUNGSI UPDATE STATUS DENGAN POPUP ---
         function updateStatusBelanja(uniqueId, newStatus) {
             let obj = flattenedBelanjaList.find(o => o.uniqueId === uniqueId); 
             if(!obj) return;
-
             Swal.fire({
-                title: 'Ubah status item ini?',
-                text: `Status barang "${obj.item}" akan diubah menjadi: ${newStatus}`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#0487D9', 
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Ubah',
-                cancelButtonText: 'Batal'
+                title: 'Ubah status item ini?', text: `Status barang "${obj.item}" akan diubah menjadi: ${newStatus}`, icon: 'question',
+                showCancelButton: true, confirmButtonColor: '#0487D9', cancelButtonColor: '#6c757d', confirmButtonText: 'Ya, Ubah', cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    obj.status = newStatus; 
-                    saveToLocal('yanoshi_belanja', flattenedBelanjaList);
-                    
+                    obj.status = newStatus; saveToLocal('yanoshi_belanja', flattenedBelanjaList);
                     let cardEl = document.getElementById(`card-${uniqueId}`);
-                    if(cardEl) { 
-                        cardEl.className = `shopping-card`; 
-                        if(newStatus === 'Sudah') cardEl.classList.add('card-sudah'); 
-                        else if(newStatus === 'Tidak Ada') cardEl.classList.add('card-tidak'); 
-                        else cardEl.classList.add('card-belum'); 
-                    }
-
+                    if(cardEl) { cardEl.className = `shopping-card`; if(newStatus === 'Sudah') cardEl.classList.add('card-sudah'); else if(newStatus === 'Tidak Ada') cardEl.classList.add('card-tidak'); else cardEl.classList.add('card-belum'); }
                     Swal.fire({ title: 'Berhasil!', text: 'Status diperbarui.', icon: 'success', timer: 1500, showConfirmButton: false });
-
-                    fetch(GAS_URL, { 
-                        method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_status_belanja', rowIndex: obj.rowIndex, itemIndex: obj.itemIndex, totalItems: obj.totalItems, newStatus: newStatus, nama: obj.nama, item: obj.item, lokasi: obj.lokasi }) 
-                    }).catch(err => console.log("Bg sync err"));
+                    fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_status_belanja', rowIndex: obj.rowIndex, itemIndex: obj.itemIndex, totalItems: obj.totalItems, newStatus: newStatus, nama: obj.nama, item: obj.item, lokasi: obj.lokasi }) }).catch(err => console.log("Bg sync err"));
                 }
             });
         }
@@ -478,34 +639,13 @@
                 if (lastSheet && data.sheets.includes(lastSheet)) { s.value = lastSheet; loadDataSheet(); }
             }); 
         }
+        
         function loadDataSheet() { 
             const s = document.getElementById('sheetSelector').value; 
             if (s) localStorage.setItem('yanoshi_last_sheet', s);
             fetchGAS('get_data', { sheetName: s }).then(data => { globalDataList = data; filterLocalData(); }); 
         }
         
-				// --- FUNGSI PENDETEKSI WARNA (TERANG / GELAP) ---
-        function getContrastYIQ(hexcolor) {
-            // Jika warna kosong atau bukan format HEX, kembalikan warna gelap (default)
-            if (!hexcolor || hexcolor[0] !== '#') return '#2c3e50';
-            
-            // Hapus tanda '#'
-            hexcolor = hexcolor.replace("#", "");
-            
-            // Ubah HEX menjadi RGB
-            var r = parseInt(hexcolor.substr(0,2),16);
-            var g = parseInt(hexcolor.substr(2,2),16);
-            var b = parseInt(hexcolor.substr(4,2),16);
-            
-            // Rumus rasio pencahayaan (YIQ)
-            var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-            
-            // Jika angka YIQ lebih besar dari 128 berarti warna terang -> text gelap
-            // Jika kurang dari 128 berarti warna gelap -> text putih
-            return (yiq >= 128) ? '#2c3e50' : '#ffffff';
-        }
-				
-        // --- LOGIKA TAMPILAN KOTAK WARNA ---
         function filterLocalData() {
             const k = document.getElementById('searchInput').value.toLowerCase(); 
             const stat = document.getElementById('statusFilter').value; 
@@ -522,11 +662,8 @@
             f.forEach(i => {
                 let sc = i.isDone ? 'status-done' : 'status-pending'; 
                 let bl = parseSmartItems(i.barang).map(b => `<li>${b}</li>`).join('');
-                
-                // Tentukan warna font otomatis (Gelap atau Putih) berdasarkan background sel
                 let fontColor = getContrastYIQ(i.warnaSel);
 
-                // Variabel Kotak Warna dan Kode (Bagian 'color' sekarang dinamis)
                 let colorBox = `<div style="background-color: ${i.warnaSel || '#f8f9fa'}; min-width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: ${fontColor}; border: 1px solid rgba(0,0,0,0.1); margin-right: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;">${i.kode}</div>`;
 
                 c.innerHTML += `
