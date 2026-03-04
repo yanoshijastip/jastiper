@@ -1,5 +1,5 @@
 // GANTI ANGKA VERSI INI SETIAP KALI ANDA MENGUPDATE FILE HTML/CSS/JS
-const CACHE_NAME = 'yanoshi-store-v5'; 
+const CACHE_NAME = 'yanoshi-store-v7'; 
 
 const urlsToCache = [
   './index.html',
