@@ -492,6 +492,9 @@
             }
 
             data.forEach(item => {
+                
+                console.log("Data Kode: ", item.kode);
+                
                 const formattedList = item.listBarang ? item.listBarang.replace(/\n/g, '<br>') : '-';
                 const isCOD = item.statusCod && !item.statusCod.toLowerCase().includes('non');
                 const badgeColor = isCOD ? 'bg-success' : 'bg-secondary';
